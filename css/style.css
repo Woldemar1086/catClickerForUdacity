@@ -12,7 +12,8 @@ img {
 
 .main__container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: space-around;
 }
 
 .cat__container {
@@ -33,7 +34,18 @@ img {
 	flex-direction: column;
 }
 
+.listOfCats {
+	height: 300px;
+	width: 100px;
+	overflow: scroll;
+}
+
 .catText {
 	display: flex;
 	padding: 20px;
+}
+
+.resetButton {
+	height: 20px;
+	width: 50px;
 }
