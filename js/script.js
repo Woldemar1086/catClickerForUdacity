@@ -1,7 +1,11 @@
 (function() {
 
-    var numberOfclicks = 0,
-        cats = {
+
+    var listWithCats = document.querySelectorAll('.listOfCats')[0],
+        resetButton = document.querySelectorAll('.resetButton')[0];
+
+    model = {
+        cats: {
             cat1: {
                 url: './img/cat1.jpg',
                 name: 'cat1',
@@ -33,141 +37,117 @@
                 srcNumber: 5
             }
         },
-        catContainer = document.querySelectorAll('.cat__container')[0],
-        catListContainer = document.querySelectorAll('.listOfCats')[0],
-        numberOfclicksView = document.querySelectorAll('.numberOfClicks')[0],
-        listWithCats = document.querySelectorAll('.listOfCats')[0],
-        resetButton = document.querySelectorAll('.resetButton')[0];
 
-    // Update on page number of clicks
-    // @param {DOMElement/Object} catEl DOMElement <img>
-    function changeView(config) {
-        var catEl = config.catEl || undefined,
-            textClassName = config.textClassName || undefined;
+        // Increment clicks amount
+        // @param {DOMElement/Object} catEl Image DOM element
+        incrementNumberOfClicks: function(catEl) {
+            this.cats['cat' + catEl.dataset.number].numberOfclicks += 1;
 
-        if (catEl) {
-            document.querySelectorAll(`.${textClassName}${catEl.dataset.number}`)[0].textContent = cats[`cat${catEl.dataset.number}`].numberOfclicks;
-        } else {
+            view.render(catEl);
+
+            view.setCatToMainWindow(catEl)
+        },
+
+        // Reset number of clicks
+        resetAll: function() {
+            var cats = model.cats
             for (let cat in cats) {
-                document.querySelectorAll(`.${textClassName}${cats[cat].srcNumber}`)[0].textContent = cats[cat].numberOfclicks
+                cats[cat].numberOfclicks = 0;
+            }
+            view.render();
+        }
+    }
+
+    controller = {
+        init: function() {
+            document.addEventListener("DOMContentLoaded", function() {
+                view.init();
+                view.render();
+                view.setCatToMainWindow();
+            });
+            this.onListClick();
+            this.onResetClick();
+        },
+        onListClick: function() {
+            listWithCats.addEventListener('click', function(e) {
+                cat = e.target
+                if (cat.dataset.number) {
+                    model.incrementNumberOfClicks(cat);
+                }
+            });
+        },
+        onResetClick: function() {
+            resetButton.addEventListener('click', model.resetAll);
+        }
+    }
+
+    view = {
+        // Update on page number of clicks
+        // @param {DOMElement/Object} catEl DOMElement <img>
+        render: function(catEl) {
+            var cats = model.cats;
+
+            if (catEl) {
+                document.querySelectorAll(`.catListText${catEl.dataset.number}`)[0].textContent = cats[`cat${catEl.dataset.number}`].numberOfclicks;
+            } else {
+                for (let cat in cats) {
+                    document.querySelectorAll(`.catListText${cats[cat].srcNumber}`)[0].textContent = cats[cat].numberOfclicks
+                }
+            }
+        },
+
+        // Create image with given `url` and `alt` text
+        // @param {String} url Image source url
+        // @param {String} name Text for img
+        // @return {DOMElement/Object} DOM element <img>
+
+        createImg: function(url, name) {
+            var img = new Image();
+            img.src = url;
+            img.alt = name;
+            img.className = `cat ${name}`;
+
+            return img;
+        },
+
+        // Create DOM elements for every child in object `cats`
+        // @param {Object} config with all settings
+        init: function(config) {
+            var img,
+                counter = 0,
+                cats = model.cats,
+                catListContainer = document.querySelectorAll('.listOfCats')[0];
+
+            for (let cat in cats) {
+                counter += 1;
+
+                creatImgContaner = document.createElement('div');
+                creatImgContaner.className = 'catList__inner__container';
+
+                creatCounterForImg = document.createElement('span');
+                creatCounterForImg.className = `catListText catListText${counter}`;
+
+
+                img = this.createImg(cats[cat].url, cats[cat].name);
+                img.dataset.number = counter;
+
+                creatImgContaner.appendChild(img);
+                creatImgContaner.appendChild(creatCounterForImg);
+                catListContainer.appendChild(creatImgContaner);
+            }
+        },
+        setCatToMainWindow: function(catEl) {
+            if (catEl) {
+                mainViewCat = document.querySelectorAll('.cat__container .catList__inner__container')[0];
+                parentNode = catEl.parentElement;
+                document.querySelectorAll('.cat__container')[0].appendChild(parentNode);
+                listWithCats.appendChild(mainViewCat);
+            } else {
+                parentNode = document.querySelectorAll('.catList__inner__container')[0];
+                document.querySelectorAll('.cat__container')[0].appendChild(parentNode);
             }
         }
     }
 
-    // Create list of cats
-    // function createListWithCats(){
-    // 	addCats({
-    // 		textClass: 'catListText catListText',
-    //     	containerClass: 'catList__inner__container',
-    //     	mainContainer: catListContainer
-    // 	})
-    // }
-
-    // Create image with given `url` and `alt` text
-    // @param {String} url Image source url
-    // @param {String} name Text for img
-    // @return {DOMElement/Object} DOM element <img>
-    function createImg(url, name) {
-        var img = new Image();
-        img.src = url;
-        img.alt = name;
-        img.className = `cat ${name}`;
-
-        return img;
-    }
-
-    // Create DOM elements for every child in object `cats`
-    // @param {Object} config with all settings
-    function addCats(config) {
-        var img,
-            counter = 0,
-            textClass = config.textClass,
-            containerClass = config.containerClass,
-            mainContainer = config.mainContainer;
-
-        for (let cat in cats) {
-            counter += 1;
-
-            creatImgContaner = document.createElement('div');
-            creatImgContaner.className = containerClass;
-
-            creatCounterForImg = document.createElement('span');
-            creatCounterForImg.className = `${textClass}${counter}`;
-
-
-            img = createImg(cats[cat].url, cats[cat].name);
-            img.dataset.number = counter;
-
-            creatImgContaner.appendChild(img);
-            creatImgContaner.appendChild(creatCounterForImg);
-            mainContainer.appendChild(creatImgContaner);
-        }
-    }
-
-    'cat__container'
-
-    function setCatToMainWindow(config) {
-        var el = config.el,
-            viewContainer = config.viewContainer,
-            listElements = config.listElements;
-
-        if (el) {
-        	mainViewCat = document.querySelectorAll('.cat__container .catList__inner__container')[0];
-            parentNode = el.parentElement;
-            document.querySelectorAll(viewContainer)[0].appendChild(parentNode);
-            listWithCats.appendChild(mainViewCat);
-        } else {
-            parentNode = document.querySelectorAll(listElements)[0];
-            document.querySelectorAll(viewContainer)[0].appendChild(parentNode);
-        }
-    }
-
-    // Increment clicks amount
-    // @param {DOMElement/Object} catEl Image DOM element
-    function incrementNumberOfClicks(catEl) {
-        cats['cat' + catEl.dataset.number].numberOfclicks += 1;
-
-        changeView({
-            catEl: catEl,
-            textClassName: 'catListText'
-        });
-
-        setCatToMainWindow({
-        	el: catEl,
-            viewContainer: '.cat__container'
-        })
-    }
-
-    // Reset number of clicks
-    function resetAll() {
-        for (let cat in cats) {
-            cats[cat].numberOfclicks = 0;
-        }
-        changeView({
-            textClassName: 'catListText'
-        });
-    }
-
-
-    document.addEventListener("DOMContentLoaded", function() {
-        addCats({
-            textClass: 'catListText catListText',
-            containerClass: 'catList__inner__container',
-            mainContainer: catListContainer
-        });
-        changeView({
-            textClassName: 'catListText'
-        });
-
-        setCatToMainWindow({
-            viewContainer: '.cat__container',
-            listElements: '.catList__inner__container'
-        })
-
-    });
-    listWithCats.addEventListener('click', function(e) {
-        cat = e.target
-        incrementNumberOfClicks(cat)
-    });
-    resetButton.addEventListener('click', resetAll);
+    controller.init()
 })();
