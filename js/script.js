@@ -62,6 +62,10 @@
             var me = this;
             resetButton.addEventListener('click', me.resetAll);
         },
+
+        getCats: function (){
+            return model.cats;
+        }
         // Increment clicks amount
         // @param {DOMElement/Object} catEl Image DOM element
         incrementNumberOfClicks: function(catEl) {
@@ -86,7 +90,7 @@
         // Update on page number of clicks
         // @param {DOMElement/Object} catEl DOMElement <img>
         render: function(catEl) {
-            var cats = model.cats;
+            var cats = controller.getCats();
 
             if (catEl) {
                 document.querySelectorAll(`.catListText${catEl.dataset.number}`)[0].textContent = cats[`cat${catEl.dataset.number}`].numberOfclicks;
@@ -116,7 +120,7 @@
         init: function(config) {
             var img,
                 counter = 0,
-                cats = model.cats,
+                cats = controller.getCats(),
                 catListContainer = document.querySelectorAll('.listOfCats')[0];
 
             for (let cat in cats) {
