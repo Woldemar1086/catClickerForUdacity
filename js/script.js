@@ -57,6 +57,7 @@
             });
             this.onListClick();
             this.onResetClick();
+            this.onAdminClick();
         },
         onListClick: function() {
             let me = this,
@@ -76,6 +77,15 @@
                 resetButton = view.getDomElement('.resetButton')[0];
 
             resetButton.addEventListener('click', me.resetAll);
+        },
+        onAdminClick: function() {
+            let me = this,
+                adminButton = view.getDomElement('.adminButton')[0];
+
+            adminButton.addEventListener('click', function(){
+                me.changeAdminStatus(me.getCats(view.getCurrentCat()));
+                view.setCatToMainWindow();
+            });
         },
 
         getCats: function(cat) {
@@ -111,6 +121,9 @@
     };
 
     view = {
+        getCurrentCat: function(){
+            return 'cat' + this.getDomElement('.cat__container .catList__inner__container img')[0].dataset.number;
+        },
         toggleClass: function(element, className) {
             if (!element || !className) {
                 return;
@@ -121,7 +134,7 @@
             if (nameIndex === -1) {
                 classString += ' ' + className;
             } else {
-                classString = classString.substr(0, nameIndex) + classString.substr(nameIndex + className.length);
+                classString = classString.substr(0, (nameIndex - 1)) + classString.substr(nameIndex + className.length);
             }
             element.className = classString;
         },
@@ -148,9 +161,12 @@
             }
         },
 
-        changeAdminInfoVisibility: function(cat, container, classActive) {
+        changeAdminInfoVisibility: function() {
+            let cat = controller.getCats(this.getCurrentCat()),
+                container = this.getDomElement('.adminContainer')[0];
+
             if (cat.adminStatus) {
-                this.toggleClass(container, classActive);
+                this.toggleClass(container, 'active');
             }
         },
 
@@ -178,7 +194,7 @@
             });
             this.getDomElement('.cat__container')[0].appendChild(adminContainer);
             this.updateAdminInfo(catInfo);
-            this.changeAdminInfoVisibility(catInfo, adminContainer, 'active')
+            this.changeAdminInfoVisibility();
         },
 
         updateAdminInfo: function(catInfo) {
@@ -228,7 +244,7 @@
 
 
                     img = this.createImg(cats[cat].url, cats[cat].name);
-                    img.dataset.number = counter;
+                    img.dataset.number = counter.toString();
 
                     createImgContainer.appendChild(img);
                     createImgContainer.appendChild(createCounterForImg);
@@ -245,7 +261,9 @@
 
             } else {
                 let parentNode = this.getDomElement('.catList__inner__container')[0].cloneNode(true);
+                this.cleanMainCatContainer();
                 this.getDomElement('.cat__container')[0].appendChild(parentNode);
+                this.createAdminInfo(controller.getCats('cat1'))
             }
         }
     };

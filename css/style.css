@@ -49,3 +49,26 @@ img {
 	height: 20px;
 	width: 50px;
 }
+
+.adminButton {
+    height: 20px;
+    width: 50px;
+}
+
+.adminContainer {
+    display: none;
+    flex-direction: column;
+}
+
+.adminContainer.active {
+    display: flex !important;
+}
+
+.adminContainer > span {
+    display: block;
+}
+
+.catList__inner__container{
+    display: flex;
+    flex-direction: column;
+}
