@@ -36,25 +36,6 @@
                 numberOfclicks: 0,
                 srcNumber: 5
             }
-        },
-
-        // Increment clicks amount
-        // @param {DOMElement/Object} catEl Image DOM element
-        incrementNumberOfClicks: function(catEl) {
-            this.cats['cat' + catEl.dataset.number].numberOfclicks += 1;
-
-            view.render(catEl);
-
-            view.setCatToMainWindow(catEl)
-        },
-
-        // Reset number of clicks
-        resetAll: function() {
-            var cats = model.cats
-            for (let cat in cats) {
-                cats[cat].numberOfclicks = 0;
-            }
-            view.render();
         }
     }
 
@@ -69,15 +50,35 @@
             this.onResetClick();
         },
         onListClick: function() {
+            var me = this;
             listWithCats.addEventListener('click', function(e) {
                 cat = e.target
                 if (cat.dataset.number) {
-                    model.incrementNumberOfClicks(cat);
+                    me.incrementNumberOfClicks(cat);
                 }
             });
         },
         onResetClick: function() {
-            resetButton.addEventListener('click', model.resetAll);
+            var me = this;
+            resetButton.addEventListener('click', me.resetAll);
+        },
+        // Increment clicks amount
+        // @param {DOMElement/Object} catEl Image DOM element
+        incrementNumberOfClicks: function(catEl) {
+            model.cats['cat' + catEl.dataset.number].numberOfclicks += 1;
+
+            view.render(catEl);
+
+            view.setCatToMainWindow(catEl)
+        },
+
+        // Reset number of clicks
+        resetAll: function() {
+            var cats = model.cats
+            for (let cat in cats) {
+                cats[cat].numberOfclicks = 0;
+            }
+            view.render();
         }
     }
 
