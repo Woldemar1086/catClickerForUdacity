@@ -36,6 +36,9 @@
                 numberOfclicks: 0,
                 srcNumber: 5
             }
+        },
+        incrementClickForCat: function(catEl){
+            this.cats['cat' + catEl.dataset.number].numberOfclicks += 1;
         }
     }
 
@@ -65,11 +68,11 @@
 
         getCats: function (){
             return model.cats;
-        }
+        },
         // Increment clicks amount
         // @param {DOMElement/Object} catEl Image DOM element
         incrementNumberOfClicks: function(catEl) {
-            model.cats['cat' + catEl.dataset.number].numberOfclicks += 1;
+            model.incrementClickForCat(catEl);
 
             view.render(catEl);
 
